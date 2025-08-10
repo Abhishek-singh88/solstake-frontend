@@ -150,42 +150,6 @@ function StakingApp() {
     setLoading(false)
   }
 
-  const initializePool = async () => {
-  const program = getProgram()
-  if (!program || !publicKey) return
-
-  setLoading(true)
-  try {
-    const poolAddress = getPoolAddress()
-    const vaultAddress = getVaultAddress()
-
-    // Check if pool is already initialized
-    const poolAccount = await program.account.pool.fetchNullable(poolAddress)
-    if (poolAccount) {
-      alert('Pool is already initialized!')
-      setLoading(false)
-      return
-    }
-
-    const signature = await program.methods
-      .initializePool()
-      .accounts({
-        pool: poolAddress,
-        vault: vaultAddress,
-        authority: publicKey,
-        systemProgram: SystemProgram.programId,
-      })
-      .rpc()
-
-    await connection.confirmTransaction(signature, 'confirmed')
-    alert('Pool initialized successfully!')
-  } catch (error) {
-    console.error('Error initializing pool:', error)
-    alert('Error initializing pool: ' + error)
-  }
-  setLoading(false)
-}
-
 
   const unstakeSol = async () => {
     const program = getProgram()
@@ -234,16 +198,6 @@ function StakingApp() {
 
         {publicKey && (
           <>
-            {/* Add this new section for pool initialization */}
-    <div className="mb-4">
-      <button
-        onClick={initializePool}
-        disabled={loading}
-        className="w-full bg-purple-500 text-white p-2 rounded hover:bg-purple-600 disabled:bg-gray-400"
-      >
-        {loading ? 'Processing...' : 'Initialize Pool (Run Once)'}
-      </button>
-    </div>
             <div className="mb-6 p-4 bg-gray-50 rounded">
               <h2 className="text-lg font-semibold mb-2">Your Stake Info</h2>
               <p className="text-sm text-gray-600">Current Balance: {balance.toFixed(4)} SOL</p>
