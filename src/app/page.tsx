@@ -1,103 +1,310 @@
-import Image from "next/image";
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { Program, AnchorProvider, BN } from '@coral-xyz/anchor'
+import idlData from '../lib/idl/solstake.json'
+import ClientLayout from './ClientLayout'
+
+const PROGRAM_ID = new PublicKey('DavPb8xssP9AcbaJkQRBFnU132oX1t5nevLxqJXQpCAJ')
+
+function StakingApp() {
+  const { connection } = useConnection()
+  const wallet = useWallet()
+  const { publicKey } = wallet
+  
+  const [balance, setBalance] = useState<number>(0)
+  const [stakeAmount, setStakeAmount] = useState<string>('')
+  const [unstakeAmount, setUnstakeAmount] = useState<string>('')
+  const [loading, setLoading] = useState(false)
+
+  const getProgram = () => {
+    if (!wallet.publicKey || !wallet.signTransaction) return null
+    
+    const provider = new AnchorProvider(
+      connection,
+      wallet as any,
+      { commitment: 'confirmed' }
+    )
+    
+    // Fix: Use only 2 parameters - idl and provider
+    return new Program(idlData as any, provider)
+  }
+
+
+  const getUserStakeAddress = () => {
+    if (!publicKey) return null
+    const [userStakeAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from('stake'), publicKey.toBuffer()],
+      PROGRAM_ID
+    )
+    return userStakeAddress
+  }
+
+  const getPoolAddress = () => {
+    const [poolAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from('pool')],
+      PROGRAM_ID
+    )
+    return poolAddress
+  }
+
+  const getVaultAddress = () => {
+    const [vaultAddress] = PublicKey.findProgramAddressSync(
+      [Buffer.from('vault')],
+      PROGRAM_ID
+    )
+    return vaultAddress
+  }
+
+  const fetchUserStakeInfo = async () => {
+    const program = getProgram()
+    if (!program || !publicKey) return
+
+    try {
+      const userStakeAddress = getUserStakeAddress()
+      if (!userStakeAddress) return
+
+      const userStakeAccount = await program.account.userStake.fetchNullable(userStakeAddress)
+
+      if (userStakeAccount) {
+        const poolAddress = getPoolAddress()
+        const poolAccount = await program.account.pool.fetch(poolAddress)
+        
+        const currentTime = Math.floor(Date.now() / 1000)
+        const timeStaked = currentTime - userStakeAccount.stakeTime.toNumber()
+        const principal = userStakeAccount.amountStaked.toNumber()
+        const rate = poolAccount.interestRate.toNumber()
+        
+        const secondsPerYear = 365 * 24 * 60 * 60
+        const interest = Math.floor((principal * rate * timeStaked) / (10000 * secondsPerYear))
+        const totalBalance = (principal + interest) / LAMPORTS_PER_SOL
+        
+        setBalance(totalBalance)
+      } else {
+        setBalance(0)
+      }
+    } catch (error) {
+      console.error('Error fetching user stake info:', error)
+      setBalance(0)
+    }
+  }
+
+  useEffect(() => {
+    if (publicKey) {
+      fetchUserStakeInfo()
+    }
+  }, [publicKey])
+
+  const stakeSol = async () => {
+    const program = getProgram()
+    if (!program || !publicKey || !stakeAmount) return
+
+    setLoading(true)
+    try {
+      const amount = new BN(parseFloat(stakeAmount) * LAMPORTS_PER_SOL)
+      const userStakeAddress = getUserStakeAddress()
+      const poolAddress = getPoolAddress()
+      const vaultAddress = getVaultAddress()
+
+      if (!userStakeAddress) return
+
+      const userStakeAccount = await program.account.userStake.fetchNullable(userStakeAddress)
+      
+      let signature
+      if (userStakeAccount) {
+        signature = await program.methods
+          .stakeMoreSol(amount)
+          .accounts({
+            userStake: userStakeAddress,
+            pool: poolAddress,
+            vault: vaultAddress,
+            user: publicKey,
+            systemProgram: SystemProgram.programId,
+          })
+          .rpc()
+      } else {
+        signature = await program.methods
+          .stakeSol(amount)
+          .accounts({
+            userStake: userStakeAddress,
+            pool: poolAddress,
+            vault: vaultAddress,
+            user: publicKey,
+            systemProgram: SystemProgram.programId,
+          })
+          .rpc()
+      }
+
+      await connection.confirmTransaction(signature, 'confirmed')
+      
+      setStakeAmount('')
+      await fetchUserStakeInfo()
+      alert('Successfully staked SOL!')
+    } catch (error) {
+      console.error('Error staking SOL:', error)
+      alert('Error staking SOL: ' + error)
+    }
+    setLoading(false)
+  }
+
+  const initializePool = async () => {
+  const program = getProgram()
+  if (!program || !publicKey) return
+
+  setLoading(true)
+  try {
+    const poolAddress = getPoolAddress()
+    const vaultAddress = getVaultAddress()
+
+    // Check if pool is already initialized
+    const poolAccount = await program.account.pool.fetchNullable(poolAddress)
+    if (poolAccount) {
+      alert('Pool is already initialized!')
+      setLoading(false)
+      return
+    }
+
+    const signature = await program.methods
+      .initializePool()
+      .accounts({
+        pool: poolAddress,
+        vault: vaultAddress,
+        authority: publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc()
+
+    await connection.confirmTransaction(signature, 'confirmed')
+    alert('Pool initialized successfully!')
+  } catch (error) {
+    console.error('Error initializing pool:', error)
+    alert('Error initializing pool: ' + error)
+  }
+  setLoading(false)
+}
+
+
+  const unstakeSol = async () => {
+    const program = getProgram()
+    if (!program || !publicKey || !unstakeAmount) return
+
+    setLoading(true)
+    try {
+      const amount = new BN(parseFloat(unstakeAmount) * LAMPORTS_PER_SOL)
+      const userStakeAddress = getUserStakeAddress()
+      const poolAddress = getPoolAddress()
+      const vaultAddress = getVaultAddress()
+
+      if (!userStakeAddress) return
+
+      const signature = await program.methods
+        .unstakeSol(amount)
+        .accounts({
+          userStake: userStakeAddress,
+          pool: poolAddress,
+          vault: vaultAddress,
+          user: publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc()
+
+      await connection.confirmTransaction(signature, 'confirmed')
+      
+      setUnstakeAmount('')
+      await fetchUserStakeInfo()
+      alert('Successfully unstaked SOL!')
+    } catch (error) {
+      console.error('Error unstaking SOL:', error)
+      alert('Error unstaking SOL: ' + error)
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-2xl font-bold text-center mb-6">SOL Staking DApp</h1>
+        
+        <div className="mb-6">
+          <WalletMultiButton className="w-full" />
+        </div>
+
+        {publicKey && (
+          <>
+            {/* Add this new section for pool initialization */}
+    <div className="mb-4">
+      <button
+        onClick={initializePool}
+        disabled={loading}
+        className="w-full bg-purple-500 text-white p-2 rounded hover:bg-purple-600 disabled:bg-gray-400"
+      >
+        {loading ? 'Processing...' : 'Initialize Pool (Run Once)'}
+      </button>
+    </div>
+            <div className="mb-6 p-4 bg-gray-50 rounded">
+              <h2 className="text-lg font-semibold mb-2">Your Stake Info</h2>
+              <p className="text-sm text-gray-600">Current Balance: {balance.toFixed(4)} SOL</p>
+              <p className="text-sm text-gray-600">Interest Rate: 5% APY</p>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Stake SOL</label>
+              <input
+                type="number"
+                step="0.1"
+                value={stakeAmount}
+                onChange={(e) => setStakeAmount(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Amount in SOL"
+              />
+              <button
+                onClick={stakeSol}
+                disabled={loading || !stakeAmount}
+                className="w-full mt-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+              >
+                {loading ? 'Processing...' : 'Stake SOL'}
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Unstake SOL</label>
+              <input
+                type="number"
+                step="0.1"
+                value={unstakeAmount}
+                onChange={(e) => setUnstakeAmount(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Amount in SOL"
+              />
+              <button
+                onClick={unstakeSol}
+                disabled={loading || !unstakeAmount || balance === 0}
+                className="w-full mt-2 bg-red-500 text-white p-2 rounded hover:bg-red-600 disabled:bg-gray-400"
+              >
+                {loading ? 'Processing...' : 'Unstake SOL'}
+              </button>
+            </div>
+
+            <button
+              onClick={fetchUserStakeInfo}
+              className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
+            >
+              Refresh Balance
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    <ClientLayout>
+      <StakingApp />
+    </ClientLayout>
+  )
 }
