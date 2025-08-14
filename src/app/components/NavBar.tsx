@@ -1,101 +1,105 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Zap } from 'lucide-react';
 import { useState } from 'react';
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'Staking', href: '/staking' },
+  { name: 'Learn & Earn', href: '/learn-earn' }
+];
 
-  const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Staking', href: '/staking' },
-    { name: 'Learn & Earn', href: '/learn-earn' }
-  ];
+export default function Navbar() {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo/Brand */}
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-gray-800">
-              YourLogo
-            </Link>
-          </div>
+    <nav className="fixed top-0 z-50 w-full backdrop-blur-lg bg-slate-900/70 border-b border-slate-700/50">
+      {/* 1-pixel gradient accent */}
+      <div className="w-full h-0.5 bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500" />
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Brand */}
+          <Link href="/" className="flex items-center space-x-2 mb-4">
+            <span className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
+              <Zap className="w-4 h-4 text-white" />
+            </span>
+            <span className="text-xl font-bold text-white">Solstake</span>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex space-x-10">
+            {navItems.map(({ name, href }) => {
+              const active = pathname === href;
               return (
                 <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    isActive
-                      ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-blue-600'
-                  }`}
+                  key={name}
+                  href={href}
+                  className={`relative text-sm font-medium transition-colors duration-200
+                    ${active ? 'text-emerald-400' : 'text-slate-300 hover:text-emerald-300'}
+                  `}
                 >
-                  {item.name}
+                  {name}
+                  {/* active underline */}
+                  {active && (
+                    <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full" />
+                  )}
                 </Link>
               );
             })}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-2"
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 text-slate-300 hover:text-white focus:outline-none"
+            aria-label="Toggle navigation"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
+              {isOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
+      {/* Mobile panel */}
+      {isOpen && (
+        <div className="md:hidden bg-slate-900/90 backdrop-blur-lg border-t border-slate-700/50">
+          <ul className="px-4 py-4 space-y-2">
+            {navItems.map(({ name, href }) => {
+              const active = pathname === href;
+              return (
+                <li key={name}>
                   <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isActive
-                        ? 'text-blue-600 bg-blue-50 border-l-4 border-blue-600'
-                        : 'text-gray-600 hover:text-blue-600'
-                    }`}
+                    href={href}
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200
+                      ${active
+                        ? 'text-emerald-400 bg-slate-800/60'
+                        : 'text-slate-300 hover:text-emerald-300'}
+                    `}
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.name}
+                    {name}
                   </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </nav>
   );
-};
-
-export default Navbar;
+}
