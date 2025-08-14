@@ -5,11 +5,53 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor'
-import { Coins, TrendingUp, RefreshCw, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { Coins, TrendingUp, RefreshCw, ArrowUpRight, ArrowDownLeft, CheckCircle, XCircle, X } from 'lucide-react'
 import idlData from '../../lib/idl/solstake.json'
 import ClientLayout from '../ClientLayout'
 
 const PROGRAM_ID = new PublicKey('DavPb8xssP9AcbaJkQRBFnU132oX1t5nevLxqJXQpCAJ')
+
+// Toast Component
+interface ToastProps {
+  message: string
+  type: 'success' | 'error'
+  onClose: () => void
+}
+
+function Toast({ message, type, onClose }: ToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose()
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  return (
+    <div className="fixed top-22 right-4 z-50 animate-in slide-in-from-right-full duration-300">
+      <div className={`flex items-center p-4 rounded-lg shadow-lg backdrop-blur-lg border w-80 ${
+        type === 'success' 
+          ? 'bg-emerald-900/80 border-emerald-500/50 text-emerald-100' 
+          : 'bg-red-900/80 border-red-500/50 text-red-100'
+      }`}>
+        <div className="flex items-center">
+          {type === 'success' ? (
+            <CheckCircle className="w-5 h-5 mr-3 text-emerald-400" />
+          ) : (
+            <XCircle className="w-5 h-5 mr-3 text-red-400" />
+          )}
+          <span className="font-medium">{message}</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="ml-4 text-gray-400 hover:text-white transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
 
 function StakingApp() {
   const { connection } = useConnection()
@@ -20,6 +62,15 @@ function StakingApp() {
   const [stakeAmount, setStakeAmount] = useState<string>('')
   const [unstakeAmount, setUnstakeAmount] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type })
+  }
+
+  const hideToast = () => {
+    setToast(null)
+  }
 
   const getProgram = () => {
     if (!wallet.publicKey || !wallet.signTransaction) return null
@@ -142,10 +193,10 @@ function StakingApp() {
       
       setStakeAmount('')
       await fetchUserStakeInfo()
-      alert('Successfully staked SOL!')
+      showToast('Successfully staked SOL!', 'success')
     } catch (error) {
       console.error('Error staking SOL:', error)
-      alert('Error staking SOL: ' + error)
+      showToast('Error staking SOL: ' + error, 'error')
     }
     setLoading(false)
   }
@@ -178,16 +229,25 @@ function StakingApp() {
       
       setUnstakeAmount('')
       await fetchUserStakeInfo()
-      alert('Successfully unstaked SOL!')
+      showToast('Successfully unstaked SOL!', 'success')
     } catch (error) {
       console.error('Error unstaking SOL:', error)
-      alert('Error unstaking SOL: ' + error)
+      showToast('Error unstaking SOL: ' + error, 'error')
     }
     setLoading(false)
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900 pt-20 px-4 pb-8">
+      {/* Toast Notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={hideToast} 
+        />
+      )}
+
       {/* Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/20 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse"></div>
