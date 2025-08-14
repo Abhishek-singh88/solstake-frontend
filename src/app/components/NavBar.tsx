@@ -7,7 +7,7 @@ import { useState } from 'react';
 const navItems = [
   { name: 'Home', href: '/' },
   { name: 'Staking', href: '/staking' },
-  { name: 'Learn & Earn', href: '/learn-earn' }
+  { name: 'Swap', href: '/swap' }
 ];
 
 export default function Navbar() {
