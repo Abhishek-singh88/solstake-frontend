@@ -1,17 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, TrendingUp, RefreshCw, Shield, Users, ArrowRight, Star, Coins, ArrowUpDown } from 'lucide-react';
-
+import { ChevronRight, TrendingUp, Award, Shield, Users, ArrowRight, Star, Coins, BookOpen } from 'lucide-react';
 export default function HomePage() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentAPY] = useState(5);
   const router = useRouter();
-
   useEffect(() => {
     setIsVisible(true);
   }, []);
-
   const features = [
     {
       icon: <Coins className="w-8 h-8" />,
@@ -26,26 +23,24 @@ export default function HomePage() {
       color: "from-amber-500 to-orange-600"
     },
     {
-      icon: <ArrowUpDown className="w-8 h-8" />,
-      title: "Instant Swaps",
-      description: "Swap between different tokens instantly with competitive rates",
+      icon: <Award className="w-8 h-8" />,
+      title: "Collect NFTs",
+      description: "Learn about DeFi and blockchain to earn exclusive NFT rewards",
       color: "from-indigo-500 to-purple-600"
     },
     {
-      icon: <RefreshCw className="w-8 h-8" />,
-      title: "Swap & Earn",
-      description: "Complete swaps and earn bonus tokens plus trading rewards",
+      icon: <BookOpen className="w-8 h-8" />,
+      title: "Learn & Earn",
+      description: "Complete educational modules and earn tokens plus knowledge",
       color: "from-rose-500 to-pink-600"
     }
   ];
-
   const stats = [
     { label: "Total Value Locked", value: "$2.4M", icon: <Shield /> },
     { label: "Active Stakers", value: "1,250+", icon: <Users /> },
-    { label: "Swaps Completed", value: "890", icon: <RefreshCw /> },
+    { label: "NFTs Distributed", value: "890", icon: <Award /> },
     { label: "Current APY", value: `${currentAPY}%`, icon: <TrendingUp /> }
   ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900">
       {/* Animated Background Elements */}
@@ -55,7 +50,6 @@ export default function HomePage() {
         <div className="absolute top-1/3 left-1/4 w-60 h-60 bg-indigo-500/20 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
         <div className="absolute bottom-1/3 right-1/4 w-60 h-60 bg-rose-500/20 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '6s' }}></div>
       </div>
-
       {/* Grid Pattern Overlay */}
       <div className="fixed inset-0 opacity-5 pointer-events-none">
         <div 
@@ -66,7 +60,6 @@ export default function HomePage() {
           }}
         ></div>
       </div>
-
       {/* Hero Section */}
       <section className="relative z-10 pt-20 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -77,12 +70,12 @@ export default function HomePage() {
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               Stake SOL,
               <span className="block bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-400 bg-clip-text text-transparent">
-                Swap & Earn Rewards
+                Learn & Earn NFTs
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-              The ultimate Solana staking and swapping platform where you earn rewards, trade tokens, 
-              and maximize your DeFi returns. Start your trading journey today!
+              The ultimate Solana staking platform where you earn rewards, gain knowledge, 
+              and collect exclusive NFTs. Start your DeFi journey today!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button
@@ -93,17 +86,16 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                onClick={() => router.push('/swap')}
+                onClick={() => router.push('/learn')}
                 className="cursor-pointer bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-white px-8 py-4 rounded-xl font-semibold hover:bg-gray-700/50 transition-all duration-200 flex items-center"
               >
-                Learn More
+                Learn & Earn
                 <ChevronRight className="ml-2 w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
       </section>
-
       {/* Stats Section */}
       <section className="relative z-10 -mt-16 mb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,7 +112,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="relative z-10 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -129,7 +120,7 @@ export default function HomePage() {
               Why Choose <span className="text-emerald-400">Solstake</span>?
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Experience the future of DeFi with our comprehensive platform that combines staking, swapping, and trading rewards
+              Experience the future of DeFi with our comprehensive platform that combines staking, learning, and NFT rewards
             </p>
           </div>
           
@@ -146,7 +137,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* APY Highlight Section */}
       <section className="relative z-10 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -178,55 +168,54 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Swapping Section */}
+      {/* Learning Section */}
       <section className="relative z-10 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-4xl font-bold text-white mb-6">
-                Swap While You <span className="text-amber-400">Earn</span>
+                Learn While You <span className="text-amber-400">Earn</span>
               </h3>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Execute instant token swaps with competitive rates and low fees. 
-                Each completed swap rewards you with bonus tokens and exclusive trading benefits.
+                Complete interactive lessons about DeFi, blockchain technology, and Solana ecosystem. 
+                Each completed module rewards you with tokens and exclusive NFTs.
               </p>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center text-gray-300">
                   <div className="w-3 h-3 bg-emerald-400 rounded-full mr-4 shadow-lg shadow-emerald-400/50"></div>
-                  Instant token swaps
+                  Interactive DeFi tutorials
                 </li>
                 <li className="flex items-center text-gray-300">
                   <div className="w-3 h-3 bg-amber-400 rounded-full mr-4 shadow-lg shadow-amber-400/50"></div>
-                  Competitive swap rates
+                  Solana blockchain deep dives
                 </li>
                 <li className="flex items-center text-gray-300">
                   <div className="w-3 h-3 bg-rose-400 rounded-full mr-4 shadow-lg shadow-rose-400/50"></div>
-                  Trading bonus rewards
+                  Exclusive NFT rewards
                 </li>
               </ul>
               <button
-                onClick={() => router.push('/swap')}
+                onClick={() => router.push('/learn')}
                 className="cursor-pointer bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-700/50 hover:border-emerald-500/30 transition-all duration-200"
               >
-                Explore Swap Hub
+                Explore Learning Hub
               </button>
             </div>
             <div className="relative">
               <div className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-lg rounded-2xl p-8 border border-gray-700/50">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { gradient: "from-emerald-500 to-teal-600", symbol: "SOL" },
-                    { gradient: "from-amber-500 to-orange-600", symbol: "USDC" },  
-                    { gradient: "from-indigo-500 to-purple-600", symbol: "RAY" },
-                    { gradient: "from-rose-500 to-pink-600", symbol: "SRM" }
-                  ].map((token, i) => (
+                    { gradient: "from-emerald-500 to-teal-600" },
+                    { gradient: "from-amber-500 to-orange-600" },
+                    { gradient: "from-indigo-500 to-purple-600" },
+                    { gradient: "from-rose-500 to-pink-600" }
+                  ].map((nft, i) => (
                     <div key={i} className="bg-gray-700/30 rounded-xl p-4 text-center border border-gray-600/30 hover:border-gray-500/50 transition-all duration-200">
-                      <div className={`w-12 h-12 bg-gradient-to-r ${token.gradient} rounded-lg mx-auto mb-3 flex items-center justify-center shadow-lg`}>
-                        <Coins className="w-6 h-6 text-white" />
+                      <div className={`w-12 h-12 bg-gradient-to-r ${nft.gradient} rounded-lg mx-auto mb-3 flex items-center justify-center shadow-lg`}>
+                        <Award className="w-6 h-6 text-white" />
                       </div>
-                      <div className="text-white font-medium text-sm">{token.symbol}</div>
-                      <div className="text-gray-400 text-xs mt-1">Available</div>
+                      <div className="text-white font-medium text-sm">NFT #{i + 1}</div>
+                      <div className="text-gray-400 text-xs mt-1">Earned</div>
                     </div>
                   ))}
                 </div>
@@ -235,7 +224,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="relative z-10 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -244,10 +232,10 @@ export default function HomePage() {
               Ready to Start Your <span className="text-emerald-400">DeFi Journey</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Join thousands of users who are already earning rewards and trading tokens on Solstake
+              Join thousands of users who are already earning rewards and collecting NFTs on Solstake
             </p>
             <button
-              onClick={() => router.push('/staking')}
+              onClick={() => router.push('/learn')}
               className="cursor-pointer bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-12 py-4 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 text-lg shadow-lg hover:shadow-emerald-500/25"
             >
               Get Started Now
