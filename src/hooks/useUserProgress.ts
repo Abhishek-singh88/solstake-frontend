@@ -34,7 +34,7 @@ export function useUserProgress() {
       const userProgressPDA = await getUserProgressPDA();
       if (!userProgressPDA) return;
       
-      const account = await program.account.userProgress.fetch(userProgressPDA);
+      const account = await (program.account as any).userProgress.fetch(userProgressPDA);
       setUserProgress(account as UserProgress);
     } catch (error) {
       console.log('User progress not found, needs initialization');
