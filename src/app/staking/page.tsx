@@ -118,11 +118,11 @@ function StakingApp() {
       const userStakeAddress = getUserStakeAddress()
       if (!userStakeAddress) return
 
-      const userStakeAccount = await program.account.UserStake.fetchNullable(userStakeAddress)
+      const userStakeAccount = await (program.account as any).userStake.fetchNullable(userStakeAddress)
 
       if (userStakeAccount) {
         const poolAddress = getPoolAddress()
-        const poolAccount = await program.account.pool.fetch(poolAddress)
+        const poolAccount = await (program.account as any).pool.fetch(poolAddress)
         
         const currentTime = Math.floor(Date.now() / 1000)
         const timeStaked = currentTime - userStakeAccount.stakeTime.toNumber()
@@ -162,7 +162,7 @@ function StakingApp() {
 
       if (!userStakeAddress) return
 
-      const userStakeAccount = await program.account.userStake.fetchNullable(userStakeAddress)
+      const userStakeAccount = await (program.account as any).userStake.fetchNullable(userStakeAddress)
       
       let signature
       if (userStakeAccount) {
