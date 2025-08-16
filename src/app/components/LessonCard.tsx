@@ -1,4 +1,4 @@
-import { BookOpen, Award, CheckCircle, Lock } from 'lucide-react';
+import { BookOpen, Award, CheckCircle } from 'lucide-react';
 
 interface LessonCardProps {
   lesson: {

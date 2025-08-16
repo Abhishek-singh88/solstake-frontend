@@ -110,7 +110,7 @@ export function ClaimNFTModal({ lesson, onClose, onClaimed }: ClaimNFTModalProps
           </div>
           <h3 className="text-xl font-semibold mb-2">{lesson.nftMetadata.name}</h3>
           <p className="text-gray-600">
-            Congratulations on completing "{lesson.title}"! 
+            Congratulations on completing &quot;{lesson.title}&quot;! 
             Claim your exclusive NFT badge as proof of your achievement.
           </p>
         </div>
