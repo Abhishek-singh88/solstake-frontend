@@ -15,7 +15,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">Solstake</span>
+              <span className="text-xl font-bold text-white">Solversity</span>
             </div>
             <p className="text-white/60 mb-4">
               The ultimate Solana staking and learning platform.
@@ -70,7 +70,7 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-white/60 text-sm">
-          <p>&copy; 2025 Solstake. Built for learning purposes on Solana Devnet.</p>
+          <p>&copy; 2025 Solversity. Built for learning purposes on Solana Devnet.</p>
           <div className="flex space-x-4 mt-4 sm:mt-0">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
