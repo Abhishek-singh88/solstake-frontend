@@ -118,7 +118,7 @@ function StakingApp() {
       const userStakeAddress = getUserStakeAddress()
       if (!userStakeAddress) return
 
-      const userStakeAccount = await program.account.userStake.fetchNullable(userStakeAddress)
+      const userStakeAccount = await program.account.UserStake.fetchNullable(userStakeAddress)
 
       if (userStakeAccount) {
         const poolAddress = getPoolAddress()
