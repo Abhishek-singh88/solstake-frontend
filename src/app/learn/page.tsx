@@ -50,7 +50,7 @@ function Toast({ message, type, onClose }: ToastProps) {
 
 export default function LearnPage() {
   const { connected } = useWallet();
-  const { userProgress, loading, initializeUser, completeLesson, refetch, isReady } = useUserProgress();
+  const { userProgress, loading, initializeUser, completeLesson, refetch } = useUserProgress();
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
   const [showClaimModal, setShowClaimModal] = useState<number | null>(null);
 
