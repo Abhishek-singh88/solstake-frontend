@@ -118,14 +118,14 @@ export function ClaimNFTModal({ lesson, onClose, onClaimed }: ClaimNFTModalProps
         <div className="flex space-x-3">
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
+            className="cursor-pointer flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-md transition-colors"
           >
             Later
           </button>
           <button
             onClick={claimNFT}
             disabled={claiming}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            className="cursor-pointer flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-medium py-2 px-4 rounded-md transition-colors"
           >
             {claiming ? 'Claiming...' : 'Claim NFT'}
           </button>
