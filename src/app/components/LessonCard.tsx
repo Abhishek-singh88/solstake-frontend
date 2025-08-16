@@ -71,7 +71,7 @@ export function LessonCard({
         ) : !isNftClaimed ? (
           <button
             onClick={onClaimNFT}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105"
+            className="cursor-pointer flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105"
           >
             <Award className="w-4 h-4 inline mr-2" />
             Claim NFT Badge
