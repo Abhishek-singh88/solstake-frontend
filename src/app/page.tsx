@@ -232,7 +232,7 @@ export default function HomePage() {
               Ready to Start Your <span className="text-emerald-400">DeFi Journey</span>?
             </h2>
             <p className="text-xl text-gray-300 mb-8">
-              Join thousands of users who are already earning rewards and collecting NFTs on Solstake
+              Join thousands of users who are already earning rewards and collecting NFTs on Solversity
             </p>
             <button
               onClick={() => router.push('/learn')}
